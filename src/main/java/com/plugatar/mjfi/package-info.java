@@ -132,7 +132,7 @@
  * <tr><td> long             </td><td> char    </td><td> {@link com.plugatar.mjfi.LongToCharFunction}        </td></tr>
  * <tr><td> long             </td><td> boolean </td><td> {@link java.util.function.LongPredicate}            </td></tr>
  * <tr><td> long             </td><td> void    </td><td> {@link java.util.function.LongConsumer}             </td></tr>
- * <tr><td> long, long       </td><td> long    </td><td> {@link java.util.function.LongBinaryOperator}        </td></tr>
+ * <tr><td> long, long       </td><td> long    </td><td> {@link java.util.function.LongBinaryOperator}       </td></tr>
  * <tr><td> long, long       </td><td> boolean </td><td> {@link com.plugatar.mjfi.LongBiPredicate}           </td></tr>
  * <tr><td> long, long       </td><td> R       </td><td> {@link com.plugatar.mjfi.LongBiFunction}            </td></tr>
  * <tr><td> long, long       </td><td> void    </td><td> {@link com.plugatar.mjfi.LongBiConsumer}            </td></tr>
