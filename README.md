@@ -1,4 +1,4 @@
-# MJFI - The Missing Java Functional Interfaces
+# MJFI - The Missing Java Functional Interfaces library
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.plugatar/mjfi/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.plugatar/mjfi)

@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 /**
- * Test case for the contract of a lambda.
+ * Test case for the contract of {@link FunctionalInterface}.
  */
 abstract class LambdaContractTest {
     private final Class<?> functionalInterfaceType;

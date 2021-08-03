@@ -21,7 +21,7 @@
     <version>1.0.0</version>
 
     <name>MJFI</name>
-    <description>The Missing Java Functional Interfaces</description>
+    <description>The Missing Java Functional Interfaces library</description>
     <url>https://github.com/evpl/mjfi</url>
 
     <developers>
