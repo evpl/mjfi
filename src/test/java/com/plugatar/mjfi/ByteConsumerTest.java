@@ -17,7 +17,16 @@
  */
 package com.plugatar.mjfi;
 
+import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 /**
  * Test case for {@link ByteConsumer}.
@@ -35,5 +44,69 @@ final class ByteConsumerTest extends LambdaContractTest {
     void asLambda() {
         final ByteConsumer lambda = (byte arg) -> {};
         lambda.accept((byte) 0);
+    }
+
+    @Test
+    void andThenMethodThrowNPEForNullArg() {
+        final ByteConsumer operator = value -> {};
+        assertThatCode(() -> {
+            operator.andThen(null);
+        }).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void andThenMethodReturnsConsumerThatDoesNotCatchException() {
+        final ByteConsumer notThrowingConsumer = value -> {};
+        final ByteConsumer throwingConsumer = value -> {throw new TestException();};
+        final ByteConsumer andThenConsumerWithExceptionInBefore = throwingConsumer.andThen(notThrowingConsumer);
+        final ByteConsumer andThenConsumerWithExceptionInAfter = notThrowingConsumer.andThen(throwingConsumer);
+        final SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThatCode(() -> {
+            andThenConsumerWithExceptionInBefore.accept((byte) 0);
+        }).isInstanceOf(TestException.class);
+        assertions.assertThatCode(() -> {
+            andThenConsumerWithExceptionInAfter.accept((byte) 0);
+        }).isInstanceOf(TestException.class);
+        assertions.assertAll();
+    }
+
+    @Test
+    void andThenMethodReturnsConsumerThatDoesNotInvokeOtherConsumerIfFirstThrowException() {
+        final ByteConsumer throwingConsumer = value -> {throw new TestException();};
+        final AtomicBoolean isNotThrowingConsumerInvoked = new AtomicBoolean();
+        final ByteConsumer notThrowingConsumer = value -> {isNotThrowingConsumerInvoked.set(true);};
+        final ByteConsumer andThenConsumer = throwingConsumer.andThen(notThrowingConsumer);
+        assertThatCode(() -> {
+            andThenConsumer.accept((byte) 0);
+        }).isInstanceOf(TestException.class);
+        assertThat(isNotThrowingConsumerInvoked.get())
+                .isFalse();
+    }
+
+    @Test
+    void andThenMethodReturnsConsumerWithCorrectExecutionOrder() {
+        final List<String> execSeq = new ArrayList<>();
+        final ByteConsumer beforeConsumer = value -> execSeq.add("before");
+        final ByteConsumer afterConsumer = value -> execSeq.add("after");
+        final ByteConsumer andThenConsumer = beforeConsumer.andThen(afterConsumer);
+        andThenConsumer.accept((byte) 0);
+        assertThat(execSeq)
+                .containsExactly("before", "after");
+    }
+
+    @Test
+    void andThenMethodReturnsConsumerWithCorrectCalculation() {
+        final AtomicReference<Byte> beforeConsumerValue = new AtomicReference<>();
+        final ByteConsumer beforeConsumer = beforeConsumerValue::set;
+        final AtomicReference<Byte> afterConsumerValue = new AtomicReference<>();
+        final ByteConsumer afterConsumer = afterConsumerValue::set;
+        final ByteConsumer amdThenConsumer = beforeConsumer.andThen(afterConsumer);
+        amdThenConsumer.accept((byte) 54);
+        final SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(beforeConsumerValue.get())
+                .isEqualTo(Byte.valueOf((byte) 54));
+        assertions.assertThat(afterConsumerValue.get())
+                .isEqualTo(Byte.valueOf((byte) 54));
+        assertions.assertAll();
     }
 }

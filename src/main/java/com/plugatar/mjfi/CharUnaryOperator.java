@@ -17,6 +17,7 @@
  */
 package com.plugatar.mjfi;
 
+import java.util.Objects;
 import java.util.function.UnaryOperator;
 
 /**
@@ -36,4 +37,47 @@ public interface CharUnaryOperator {
      * @return the operator result
      */
     char applyAsChar(char operand);
+
+    /**
+     * Returns a composed operator that first applies the {@code before}
+     * operator to its input, and then applies this operator to the result.
+     * If evaluation of either operator throws an exception, it is relayed to
+     * the caller of the composed operator.
+     *
+     * @param before the operator to apply before this operator is applied
+     * @return a composed operator that first applies the {@code before}
+     * operator and then applies this operator
+     * @throws NullPointerException if {@code before} is null
+     * @see #andThen(CharUnaryOperator)
+     */
+    default CharUnaryOperator compose(final CharUnaryOperator before) {
+        Objects.requireNonNull(before);
+        return value -> this.applyAsChar(before.applyAsChar(value));
+    }
+
+    /**
+     * Returns a composed operator that first applies this operator to
+     * its input, and then applies the {@code after} operator to the result.
+     * If evaluation of either operator throws an exception, it is relayed to
+     * the caller of the composed operator.
+     *
+     * @param after the operator to apply after this operator is applied
+     * @return a composed operator that first applies this operator and then
+     * applies the {@code after} operator
+     * @throws NullPointerException if {@code after} is null
+     * @see #compose(CharUnaryOperator)
+     */
+    default CharUnaryOperator andThen(final CharUnaryOperator after) {
+        Objects.requireNonNull(after);
+        return value -> after.applyAsChar(this.applyAsChar(value));
+    }
+
+    /**
+     * Returns a unary operator that always returns its input argument.
+     *
+     * @return a unary operator that always returns its input argument
+     */
+    static CharUnaryOperator identity() {
+        return value -> value;
+    }
 }
