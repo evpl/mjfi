@@ -9,26 +9,22 @@
 This library extends `java.util.function` package with 130 functional interfaces for objects, primitive types
 and operations between them.
 
-## Roadmap
-* add default/static methods in `java.util.function` package style
-
 ## How to use
-The library has no dependencies. All you need is Java 8+ and this library (get the latest version
-[here](https://github.com/evpl/mjfi)).
+The library has no dependencies. All you need is Java 8+ and this library.
 
 Maven:
 ```xml
 <dependency>
   <groupId>com.plugatar</groupId>
   <artifactId>mjfi</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
 Gradle:
 ```groovy
 dependencies {
-    compile 'com.plugatar:mjfi:1.0.0'
+    compile 'com.plugatar:mjfi:1.1.0'
 }
 ```
 
