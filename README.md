@@ -9,6 +9,9 @@
 This library extends `java.util.function` package with 130 functional interfaces for objects, primitive types
 and operations between them.
 
+## Roadmap
+* only bug fixes
+
 ## How to use
 The library has no dependencies. All you need is Java 8+ and this library.
 
@@ -17,14 +20,14 @@ Maven:
 <dependency>
   <groupId>com.plugatar</groupId>
   <artifactId>mjfi</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
 Gradle:
 ```groovy
 dependencies {
-    compile 'com.plugatar:mjfi:1.1.0'
+    compile 'com.plugatar:mjfi:1.1.1'
 }
 ```
 
