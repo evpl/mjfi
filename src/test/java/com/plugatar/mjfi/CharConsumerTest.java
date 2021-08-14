@@ -17,7 +17,16 @@
  */
 package com.plugatar.mjfi;
 
+import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 /**
  * Test case for {@link CharConsumer}.
@@ -35,5 +44,69 @@ final class CharConsumerTest extends LambdaContractTest {
     void asLambda() {
         final CharConsumer lambda = (char arg) -> {};
         lambda.accept((char) 0);
+    }
+
+    @Test
+    void andThenMethodThrowNPEForNullArg() {
+        final CharConsumer operator = value -> {};
+        assertThatCode(() -> {
+            operator.andThen(null);
+        }).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void andThenMethodReturnsConsumerThatDoesNotCatchException() {
+        final CharConsumer notThrowingConsumer = value -> {};
+        final CharConsumer throwingConsumer = value -> {throw new TestException();};
+        final CharConsumer andThenConsumerWithExceptionInBefore = throwingConsumer.andThen(notThrowingConsumer);
+        final CharConsumer andThenConsumerWithExceptionInAfter = notThrowingConsumer.andThen(throwingConsumer);
+        final SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThatCode(() -> {
+            andThenConsumerWithExceptionInBefore.accept((char) 0);
+        }).isInstanceOf(TestException.class);
+        assertions.assertThatCode(() -> {
+            andThenConsumerWithExceptionInAfter.accept((char) 0);
+        }).isInstanceOf(TestException.class);
+        assertions.assertAll();
+    }
+
+    @Test
+    void andThenMethodReturnsConsumerThatDoesNotInvokeOtherConsumerIfFirstThrowException() {
+        final CharConsumer throwingConsumer = value -> {throw new TestException();};
+        final AtomicBoolean isNotThrowingConsumerInvoked = new AtomicBoolean();
+        final CharConsumer notThrowingConsumer = value -> {isNotThrowingConsumerInvoked.set(true);};
+        final CharConsumer andThenConsumer = throwingConsumer.andThen(notThrowingConsumer);
+        assertThatCode(() -> {
+            andThenConsumer.accept((char) 0);
+        }).isInstanceOf(TestException.class);
+        assertThat(isNotThrowingConsumerInvoked.get())
+                .isFalse();
+    }
+
+    @Test
+    void andThenMethodReturnsConsumerWithCorrectExecutionOrder() {
+        final List<String> execSeq = new ArrayList<>();
+        final CharConsumer beforeConsumer = value -> execSeq.add("before");
+        final CharConsumer afterConsumer = value -> execSeq.add("after");
+        final CharConsumer andThenConsumer = beforeConsumer.andThen(afterConsumer);
+        andThenConsumer.accept((char) 0);
+        assertThat(execSeq)
+                .containsExactly("before", "after");
+    }
+
+    @Test
+    void andThenMethodReturnsConsumerWithCorrectCalculation() {
+        final AtomicReference<Character> beforeConsumerValue = new AtomicReference<>();
+        final CharConsumer beforeConsumer = beforeConsumerValue::set;
+        final AtomicReference<Character> afterConsumerValue = new AtomicReference<>();
+        final CharConsumer afterConsumer = afterConsumerValue::set;
+        final CharConsumer amdThenConsumer = beforeConsumer.andThen(afterConsumer);
+        amdThenConsumer.accept((char) 54);
+        final SoftAssertions assertions = new SoftAssertions();
+        assertions.assertThat(beforeConsumerValue.get())
+                .isEqualTo(Character.valueOf((char) 54));
+        assertions.assertThat(afterConsumerValue.get())
+                .isEqualTo(Character.valueOf((char) 54));
+        assertions.assertAll();
     }
 }
