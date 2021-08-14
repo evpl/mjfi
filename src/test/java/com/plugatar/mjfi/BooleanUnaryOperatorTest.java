@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 /**
  * Test case for {@link BooleanUnaryOperator}.
  */
-public final class BooleanUnaryOperatorTest extends LambdaContractTest {
+final class BooleanUnaryOperatorTest extends LambdaContractTest {
 
     BooleanUnaryOperatorTest() {
         super(
